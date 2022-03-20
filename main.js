@@ -19,26 +19,16 @@ renderer.setClearColor( 0xB7C3F3, 1 )
 const loader = new THREE.GLTFLoader()
 let doll
 
-const start_position = 6
 const end_position = -start_position
 
 const text = document.querySelector('.text')
 
-let DEAD_PLAYERS = 0
-let SAFE_PLAYERS = 0
-
 const startBtn = document.querySelector('.start-btn')
-
-//musics
-const bgMusic = new Audio('./music/bg.mp3')
-bgMusic.loop = true
-const winMusic = new Audio('./music/win.mp3')
-const loseMusic = new Audio('./music/lose.mp3')
 
 loader.load( './model/scene.gltf', function ( gltf ){
     scene.add( gltf.scene )
     doll = gltf.scene
-    gltf.scene.position.set(0,-1, 0)
+    gltf.scene.position.set(.2, -1, .2)
     gltf.scene.scale.set(0.4, 0.4, 0.4)
     startBtn.innerText = "start"
 })
@@ -67,73 +57,6 @@ createCube({w: start_position * 2 + .21, h: 1.5, d: 1}, 0, 0, 0xe5a716).position
 createCube({w: .2, h: 1.5, d: 1}, start_position, -.4)
 createCube({w: .2, h: 1.5, d: 1}, end_position, .4)
 
-
-class Player {
-    constructor(name = "Player", radius = .25, posY = 0, color = 0xffffff){
-        const geometry = new THREE.SphereGeometry( radius, 100, 100 )
-        const material = new THREE.MeshBasicMaterial( { color } )
-        const player = new THREE.Mesh( geometry, material )
-        scene.add( player )
-        player.position.x = start_position - .4
-        player.position.z = 1
-        player.position.y = posY
-        this.player = player
-        this.playerInfo = {
-            positionX: start_position - .4,
-            velocity: 0,
-            name,
-            isDead: false
-        }
-    }
-
-    run(){
-        if(this.playerInfo.isDead) return
-        this.playerInfo.velocity = .03
-    }
-
-    stop(){
-        gsap.to(this.playerInfo, { duration: .1, velocity: 0 })
-    }
-
-    check(){
-        if(this.playerInfo.isDead) return
-        if(!dallFacingBack && this.playerInfo.velocity > 0){
-            text.innerText = this.playerInfo.name + " lost!!!"
-            this.playerInfo.isDead = true
-            this.stop()
-            DEAD_PLAYERS++
-            loseMusic.play()
-            if(DEAD_PLAYERS == players.length){
-                text.innerText = "Everyone lost!!!"
-                gameStat = "ended"
-            }
-            if(DEAD_PLAYERS + SAFE_PLAYERS == players.length){
-                gameStat = "ended"
-            }
-        }
-        if(this.playerInfo.positionX < end_position + .7){
-            text.innerText = this.playerInfo.name + " is safe!!!"
-            this.playerInfo.isDead = true
-            this.stop()
-            SAFE_PLAYERS++
-            winMusic.play()
-            if(SAFE_PLAYERS == players.length){
-                text.innerText = "Everyone is safe!!!"
-                gameStat = "ended"
-            }
-            if(DEAD_PLAYERS + SAFE_PLAYERS == players.length){
-                gameStat = "ended"
-            }
-        }
-    }
-
-    update(){
-        this.check()
-        this.playerInfo.positionX -= this.playerInfo.velocity
-        this.player.position.x = this.playerInfo.positionX
-    }
-}
-
 async function delay(ms){
     return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -153,9 +76,14 @@ const players = [
         name: "Player 2"
     }
 ]
-
-const TIME_LIMIT = 15
+//musics
+const bgMusic = new Audio('./music/bg.mp3')
+const winMusic = new Audio('./music/win.mp3')
+const loseMusic = new Audio('./music/lose.mp3')
+bgMusic.loop = true
 async function init(){
+    await delay(500)
+    text.innerText = "Starting in 4"
     await delay(500)
     text.innerText = "Starting in 3"
     await delay(500)
@@ -168,8 +96,6 @@ async function init(){
     bgMusic.play()
     start()
 }
-
-let gameStat = "loading"
 
 function start(){
     gameStat = "started"
@@ -186,7 +112,6 @@ function start(){
     startDall()
 }
 
-let dallFacingBack = true
 async function startDall(){
    lookBackward()
    await delay((Math.random() * 1500) + 1500)
@@ -218,6 +143,7 @@ window.addEventListener( "keydown", function(e){
         p.player.run()
     }
 })
+
 window.addEventListener( "keyup", function(e){
     let p = players.find(player => player.key == e.key)
     if(p){
