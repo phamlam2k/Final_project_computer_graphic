@@ -92,9 +92,6 @@ async function delay(ms) {
 }
 
 //Get the musics.
-const bgMusic = new Audio('./music/bg.mp3')
-const winMusic = new Audio('./music/win.mp3')
-const loseMusic = new Audio('./music/lose.mp3')
 bgMusic.loop = true
 async function init() {
     await delay(500)
@@ -157,27 +154,3 @@ function animate() {
     requestAnimationFrame(animate)
 }
 animate()
-
-// Key status of window.
-window.addEventListener("keydown", function (e) {
-    if (gameStat != "started") return
-    let p = players.find(player => player.key == e.key)
-    if (p) {
-        p.player.run()
-    }
-})
-
-window.addEventListener("keyup", function (e) {
-    let p = players.find(player => player.key == e.key)
-    if (p) {
-        p.player.stop()
-    }
-})
-
-window.addEventListener('resize', onWindowResize, false)
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
-    camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
-}
