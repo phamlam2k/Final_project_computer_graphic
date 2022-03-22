@@ -19,3 +19,11 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+const startBtn = document.querySelector('.start-btn')
+startBtn.addEventListener('click', () => {
+  if (startBtn.innerText == "START") {
+      init()
+      document.querySelector('.modal').style.display = "none"
+  }
+})

@@ -24,8 +24,6 @@ const end_position = -start_position
 
 const text = document.querySelector('.text')
 
-const startBtn = document.querySelector('.start-btn')
-
 // Create the doll.
 loader.load('./model/scene.gltf', function (gltf) {
     scene.add(gltf.scene)
@@ -94,16 +92,10 @@ async function delay(ms) {
 //Get the musics.
 bgMusic.loop = true
 async function init() {
-    await delay(500)
-    text.innerText = "Starting in 4"
-    await delay(500)
-    text.innerText = "Starting in 3"
-    await delay(500)
-    text.innerText = "Starting in 2"
-    await delay(500)
-    text.innerText = "Starting in 1"
-    lookBackward()
-    await delay(500)
+    for(var i = 4; i > 1; i--){
+        await delay(500)
+        text.innerText = `Starting in ${i}`
+    }
     text.innerText = "Gooo!!!"
     bgMusic.play()
     start()
@@ -139,13 +131,6 @@ async function startDall() {
     await delay((Math.random() * 750) + 750)
     startDall()
 }
-
-startBtn.addEventListener('click', () => {
-    if (startBtn.innerText == "START") {
-        init()
-        document.querySelector('.modal').style.display = "none"
-    }
-})
 
 function animate() {
     renderer.render(scene, camera)
